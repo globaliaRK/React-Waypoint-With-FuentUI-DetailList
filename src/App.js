@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useState } from "react";
-import { DetailsList, SelectionMode } from "@fluentui/react";
+import { DetailsList, DetailsRow, SelectionMode } from "@fluentui/react";
 import axios from "axios";
 import { Waypoint } from "react-waypoint"
 
@@ -7,15 +7,15 @@ function App() {
   const [items, setItems] = useState([]);
   const [dataa, setData] = useState([]);
   const [columns, setColumns] = useState();
-  const [, setFlag] = useState(false);
   const [parPage] = useState(20);
-  const [active, setActive] = useState(0);
+  const [active, setActive] = useState(1);
 
   useEffect(() => {
     const columnss = [{
       key: 'column1',
       name: 'UserID',
       fieldName: 'userId',
+      className: "py-3 h5",
       minWidth: 70,
       maxWidth: 90,
       isResizable: true,
@@ -28,6 +28,7 @@ function App() {
       fieldName: 'id',
       minWidth: 70,
       maxWidth: 90,
+      className: "py-3 h5",
       isResizable: true,
       data: 'string',
       isPadded: true,
@@ -37,6 +38,7 @@ function App() {
       name: 'Title',
       fieldName: 'title',
       minWidth: 70,
+      className: "py-3 h5",
       maxWidth: 90,
       isResizable: true,
       data: 'string',
@@ -48,6 +50,7 @@ function App() {
       fieldName: 'body',
       minWidth: 70,
       maxWidth: 90,
+      className: "py-3 h5",
       isResizable: true,
       isCollapsible: true,
       data: ' ',
@@ -58,31 +61,28 @@ function App() {
       const { data } = await axios.get("https://jsonplaceholder.typicode.com/posts");
       const newData = data.map((e, i) => {
         return i % parPage === 0 ? data.slice(i, i + parPage) : null;
-      }).filter(e => { return e; })
+      }).filter(e => e)
       setData(newData);
       setItems(newData[0]);
     }
     getItems();
   }, [])
 
-  const onEnter = () => {
-    if (active < dataa.length && (active !== 0)) {
+  const onEnter = async () => {
+    if (active < dataa.length) {
       setItems([...items, ...dataa[active]])
       setActive(active + 1);
-    } else {
-      setActive(active + 1);
     }
-    setFlag(false)
   }
 
   return (
     <Fragment>
       <DetailsList
         selectionMode={SelectionMode.none}
+        onRenderRow={(props) => <DetailsRow className="py-3 h5" {...props} />}
         items={items}
-        columns={columns}
-      />
-      <Waypoint onLeave={() => onEnter()} />
+        columns={columns} />
+      <Waypoint onEnter={onEnter} />
     </Fragment>
   );
 }
